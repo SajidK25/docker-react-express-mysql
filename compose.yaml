@@ -2,17 +2,17 @@ services:
   backend:
     build:
       args:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
       context: backend
       target: development
       network: host
-    command: npm run start-watch
+    command: nohup npm run start >> logs/app.logs 2>&1 &
     environment:
-      - DATABASE_DB=example
-      - DATABASE_USER=root
+      - DATABASE_DB=${DB_NAME}
+      - DATABASE_USER=${DB_USER}
       - DATABASE_PASSWORD=/run/secrets/db-password
       - DATABASE_HOST=db
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
     ports:
       - 80:80
       - 9229:9229
@@ -23,6 +23,7 @@ services:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
+      - ./backend/logs/app.logs:/backend/app.logs
       - back-notused:/opt/app/node_modules
     networks:
       - public
@@ -43,7 +44,7 @@ services:
     networks:
       - private
     environment:
-      - MYSQL_DATABASE=example
+      - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
   frontend:
     build:

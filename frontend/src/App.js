@@ -17,6 +17,8 @@ function App() {
         <p>{message || "Loading..."}</p>
         <p>
           Edit <code>src/App.js</code> and save to reload.
+          Edited and reloading.......
+          Edited and reloading.......
         </p>
         <a
           className="App-link"
