@@ -1,9 +1,9 @@
 {
-  "name": "node-docker",
+  "name": "node-docker-good-defaults",
   "private": true,
-  "version": "1.0.0",
-  "description": "Node.js + docker compose",
-  "author": "Sajid Khan<sajidk25@gmail.com>",
+  "version": "2.0.1",
+  "description": "Node.js Hello world app using docker features for easy docker compose local dev and solid production defaults",
+  "author": "Bret Fisher <bret@bretfisher.com>",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
