@@ -2,17 +2,18 @@ services:
   backend:
     build:
       args:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
       context: backend
       target: development
       network: host
-    command: npm run start-watch
+    command: nohup npm run start >> logs/app.logs 2>&1 &
+    image: tech99/react-express-mysql-backend
     environment:
-      - DATABASE_DB=example
-      - DATABASE_USER=root
+      - DATABASE_DB=${DB_NAME}
+      - DATABASE_USER=${DB_USER}
       - DATABASE_PASSWORD=/run/secrets/db-password
       - DATABASE_HOST=db
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV}
     ports:
       - 80:80
       - 9229:9229
@@ -23,6 +24,7 @@ services:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
+      - ./backend/logs/app.logs:/backend/app.logs
       - back-notused:/opt/app/node_modules
     networks:
       - public
@@ -30,10 +32,8 @@ services:
     depends_on:
       - db
   db:
-    # We use a mariadb image which supports both amd64 & arm64 architecture
+    
     image: mariadb:10.6.4-focal
-    # If you really want to use MySQL, uncomment the following line
-    #image: mysql:8.0.27
     command: '--default-authentication-plugin=mysql_native_password'
     restart: always
     secrets:
@@ -43,13 +43,14 @@ services:
     networks:
       - private
     environment:
-      - MYSQL_DATABASE=example
+      - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
   frontend:
     build:
       context: frontend
       target: development
       network: host
+    image: tech99/react-express-mysql-frontend
     ports:
       - 3005:3000
     volumes:
