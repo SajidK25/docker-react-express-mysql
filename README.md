@@ -87,3 +87,54 @@ Removing docker-react-express-mysql_db_1       ... done
 Removing network docker-react-express-mysql_default
 
 ```
+## Push frontend and backend images to hub.docker.com
+
+- Tag the `frontend` and `backend` images as `from tech99/react-express-mysql-frontend` and `from tech99/react-express-mysql-backend  ` respectively.
+- login to hub.docker.com
+  > docker login
+
+- build the images
+  > docker compose build
+
+- push the images
+  > docker compose push
+
+After the images push completed, navigate to `https://hub.docker.com` in your web browser.
+
+![page](./001.dockerhub1.png)
+
+## Implement exporting database from the database server and use this dump file as a backup
+
+- Created a shell script name `db_backup_script.sh`
+  ```shell
+  #!/bin/bash
+
+  if [ "$#" -ne 5 ]; then
+      echo "Usage: $0 <databaseuser> <servicename> <password> <databasename> <outputfile>"
+      exit 1
+  fi
+
+  DB_USER="$1"
+  SERVICE_NAME="$2"
+  PASSWORD="$3"
+  DB_NAME="$4"
+  OUTPUT_FILE="$5"
+
+  NOW=$(date +"%Y-%m-%d-%H-%M-%S")
+  DUMP_COMMAND="docker compose exec $SERVICE_NAME /usr/bin/mysqldump -u $DB_USER --password=$PASSWORD $DB_NAME > $(pwd)/$OUTPUT_FILE-$NOW.sql"
+
+  eval "$DUMP_COMMAND"
+
+  if [ $? -eq 0 ]; then
+      echo "Database backup completed successfully. Output file: $OUTPUT_FILE"
+  else
+      echo "Error: Database backup failed."
+  fi
+  
+  ```
+- This script will take following 5 arguments 
+  ` <databaseuser> <servicename> <password> <databasename> <outputfile> `
+  
+  > sudo ./db_backup_script.sh root db db-btf5q example backup_exampleDB
+
+- This will create a dumpfile name `backup_exampleDB-2023-12-11-03-01-09.sql`

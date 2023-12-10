@@ -7,6 +7,7 @@ services:
       target: development
       network: host
     command: nohup npm run start >> logs/app.logs 2>&1 &
+    image: tech99/react-express-mysql-backend
     environment:
       - DATABASE_DB=${DB_NAME}
       - DATABASE_USER=${DB_USER}
@@ -49,6 +50,7 @@ services:
       context: frontend
       target: development
       network: host
+    image: tech99/react-express-mysql-frontend
     ports:
       - 3005:3000
     volumes:
